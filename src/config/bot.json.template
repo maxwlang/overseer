@@ -1,0 +1,15 @@
+{
+    "token": "",
+    "emoji": {
+        "topX": true,
+        "topAmount": 10,
+        "emojis": [
+            ":custom1:",
+            "smile emoji"
+        ]
+    },
+    "channel": {
+        "monitorChannelID": "",
+        "statsChannelID": ""
+    }
+}
