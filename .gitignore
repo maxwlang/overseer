@@ -1,0 +1,7 @@
+# Node
+node_modules
+
+# Non-templated data
+data/database.db
+data/logs.log
+src/config/bot.json
