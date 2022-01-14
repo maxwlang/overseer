@@ -1,10 +1,12 @@
-const { MessageEmbed } = require('discord.js')
+const { MessageEmbed, MessageActionRow, MessageSelectMenu } = require('discord.js')
 const bPromise = require('bluebird')
 
-module.exports = (bot, emoji) => {
+module.exports = async (bot, emojis, selected = 0) => {
     const botName = bot.user.username
     const avatarUrl = bot.user.displayAvatarURL({ dynamic: true })
     const serverName = bot.guilds.cache.get(bot.config.server.id)
+
+    const emoji = emojis[selected]
     
     // inside a command, event listener, etc.
     const embed = new MessageEmbed()
@@ -46,5 +48,20 @@ module.exports = (bot, emoji) => {
             { name: '\u200B', value: '\u200B' }
         )
 
-    return embed
+        const selectOptions = await bPromise.map(emojis, (emoji, index) => ({
+            label: `${emoji} Leaderboard`,
+            description: `User leaderboard for the ${emoji} emoji.`,
+            value: index.toString(),
+            default: selected > 0 ? index === selected : index === 0
+        }))
+
+        const row = new MessageActionRow()
+			.addComponents(
+				new MessageSelectMenu()
+					.setCustomId('updateLeaderboard')
+					.setPlaceholder(`${emoji} Leaderboard`)
+					.addOptions(selectOptions),
+			);
+
+    return {embeds: [embed], components: [row]}
 }

@@ -23,9 +23,9 @@ module.exports = async (config, db, logger, options) => {
     for (const file of eventFiles) {
         const event = require(`./events/${file}`)
         if (event.once) {
-            bot.once(event.name, async (...args) => await event.execute(...args))
+            bot.once(event.name, async (...args) => await event.execute(...args, bot))
         } else {
-            bot.on(event.name, async (...args) => await event.execute(...args))
+            bot.on(event.name, async (...args) => await event.execute(...args, bot))
         }
     }
 }
