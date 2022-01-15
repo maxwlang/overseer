@@ -1,15 +1,17 @@
 {
     "token": "",
-    "emoji": {
-        "topX": true,
-        "topAmount": 10,
-        "emojis": [
-            ":custom1:",
-            "smile emoji"
-        ]
+    "server": {
+        "id": "",
+        "channel": {
+            "$comment": "Set null for all channels",
+            "monitorChannelIDs": [""],
+            "statsChannelID": ""
+        }
     },
-    "channel": {
-        "monitorChannelID": "",
-        "statsChannelID": ""
-    }
+    "emoji": {
+        "watching": ["⭐"]
+    },
+    "leaderboard": {
+        "maxUsers": 10
+    } 
 }
