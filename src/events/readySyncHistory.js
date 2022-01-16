@@ -52,6 +52,7 @@ async function needsAdditionalMessages(bot, channel) {
 	const {Message_Sync} = bot.db.sequelize.models
 	const latestMessageMap = await channel.messages.fetch({ limit: 1 })
 	const latestMessage = latestMessageMap.last()
+	if (latestMessage === undefined) return false
 	const latestMessageId = latestMessage.id
 
 	const readResult = await Message_Sync.findAll({
