@@ -15,9 +15,10 @@ module.exports = (sequelize, DataTypes) => {
   };
   User_Reacts.init({
     uuid: DataTypes.UUIDV4,
-    useruuid: DataTypes.UUIDV4,
-    reactoruuid: DataTypes.UUIDV4,
-    reactuuid: DataTypes.UUIDV4
+    messageSnowflake: DataTypes.STRING,
+    userUuid: DataTypes.UUIDV4,
+    reactorUuid: DataTypes.UUIDV4,
+    emoteUuid: DataTypes.UUIDV4
   }, {
     sequelize,
     modelName: 'User_Reacts',

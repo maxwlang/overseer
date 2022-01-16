@@ -13,15 +13,19 @@ module.exports = {
         unique: true,
         type: Sequelize.UUIDV4
       },
-      useruuid: {
+      messageSnowflake: {
+        allowNull: false,
+        type: Sequelize.STRING
+      },
+      userUuid: {
         allowNull: false,
         type: Sequelize.UUIDV4
       },
-      reactoruuid: {
+      reactorUuid: {
         allowNull: false,
         type: Sequelize.UUIDV4
       },
-      reactuuid: {
+      emoteUuid: {
         allowNull: false,
         type: Sequelize.UUIDV4
       },

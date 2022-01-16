@@ -3,7 +3,7 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class React extends Model {
+  class Emote extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -13,15 +13,14 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
     }
   };
-  React.init({
+  Emote.init({
     uuid: DataTypes.UUIDV4,
-    snowflake: DataTypes.STRING,
     isCustom: DataTypes.BOOLEAN,
     customId: DataTypes.STRING,
     unicodeValue: DataTypes.STRING
   }, {
     sequelize,
-    modelName: 'React',
+    modelName: 'Emote',
   });
-  return React;
+  return Emote;
 };

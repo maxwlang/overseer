@@ -1,7 +1,7 @@
 'use strict';
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('Reacts', {
+    await queryInterface.createTable('Emotes', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -13,12 +13,7 @@ module.exports = {
         unique: true,
         type: Sequelize.UUIDV4
       },
-      snowflake: {
-        allowNull: false,
-        type: Sequelize.STRING
-      },
       isCustom: {
-        allowNull: false,
         type: Sequelize.BOOLEAN
       },
       customId: {
@@ -38,6 +33,6 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('Reacts');
+    await queryInterface.dropTable('Emotes');
   }
 };
