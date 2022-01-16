@@ -1,4 +1,6 @@
+const generateStatusEmbed = require('../embeds/statusEmbed')
 const bPromise = require('bluebird')
+const uuidv4 = require('uuid').v4
 const _ = require('underscore')
 
 module.exports = {
@@ -24,15 +26,17 @@ module.exports = {
 		}).filter(messageArr => messageArr.length > 0))		
 		bot.log.info(`[Sync] ${messages.length} messages downloaded`)
 
-		bot.log.info('[Sync] Tallying reacts')
-		await bPromise.each(messages, async message =>
-			await tallyReactsForMessage(message)
-		)
+		bot.log.info(`[Sync] Tallying reacts for ${messages.length} messags, this will take some time`)
+		await bPromise.each(messages, async (message, index) => {
+			if (index % Math.floor((messages.length / 50)) === 0 || index === messages.length) bot.log.info(`[Sync] ${index + 1} of ${messages.length}`)
+			await tallyReactsForMessage(bot, message)
+		})
 
-		// refresh embed
-		// if(bot.statusEmbed) bot.statusEmbed = generateStatus
+		bot.log.info('[Sync] Refreshing embed')
+		const statusEmbed = await generateStatusEmbed(bot, bot.config.emoji.watching)
+		if(bot.statusEmbed) bot.statusEmbed.edit(statusEmbed)
 
-		console.log(messages.length)
+		bot.log.info('[Sync] Sync complete!')
 	},
 }
 
@@ -97,27 +101,119 @@ async function getAdditionalMessages(bot, channel, limit = 500) {
 /**
  * Updates database records based on message reaction status
  * @param {*} message - Discord message
- * @returns {Number} Count of reacts for message
  */
-async function tallyReactsForMessage(message) {
+async function tallyReactsForMessage(bot, message) {
+	const {User_Reacts, Emote, User} = bot.db.sequelize.models
+
 	if (!message.reactions || !('cache' in message.reactions) || [...message.reactions.cache].length === 0) {
 		// Message doesn't have reacts, check if message is stored with reacts and if so update
-		return 0
+		const totalReactions = await User_Reacts.count({
+			where: {
+				messageSnowflake: message.id
+			}
+		});
+
+		if (totalReactions > 0) {
+			await User_Reacts.destroy({
+				where: {
+					messageSnowflake: message.id
+				}
+			});
+		}
 	} else {
-		// Message has reacts, check if message is stored with reacts
-			// If not, add message with reacts to database
+		// bot.log.info(`[Sync] Getting information for ${[...message.reactions.cache].length} reactions`)
+		await bPromise.each(message.reactions.cache, async reactionArr => {
+			const reaction = reactionArr[1]
+			const isCustom = reaction.emoji.id !== null
 
-			// If so, make sure react counts are correct in database
-			
-		console.log(message.reactions.cache, 'yee')
+			// Look for existing emote definition
+			const emoteDefinition = await Emote.findAll({
+				where: (() => {
+					const query = { isCustom }
+					if (isCustom) query['customId'] = reaction.emoji.id
+					if (!isCustom) query['unicodeValue'] = reaction.emoji.name
+					return query
+				})()
+			});
 
+			let emojiUUID
+			if (emoteDefinition.length > 0) {
+				emojiUUID = emoteDefinition[0].dataValues.uuid
+			} else {
+				// Create a new definition
+				emojiUUID = uuidv4()
+				await Emote.create((() => {
+					const query = {
+						uuid: emojiUUID,
+						isCustom
+					}
+					if (isCustom) query['customId'] = reaction.emoji.id
+					if (!isCustom) query['unicodeValue'] = reaction.emoji.name
+					return query
+				})());
+			}
 
-		// // console.log(Object.keys(latestMessage))
-		// // // fetch the users
-		// bPromise.each(latestMessage.reactions.cache, reaction => {
-		// 	// console.log(Object.keys, reaction, 'aaaas')
-		// })
-		const reactCount = 2
-		return reactCount
+			// Remove previous react data, we'll add updated information next
+			await User_Reacts.destroy({
+				where: {
+					messageSnowflake: message.id
+				}
+			});
+
+			// Link emote uuid to users with user_reacts table
+			await bPromise.each(await reaction.users.fetch(), async userArr => {
+				const user = userArr[1]
+
+				// Return out if self-reacts do not count towards the leaderboard
+				if (!bot.config.leaderboard.selfReactsCount && user.id === message.author.id) return
+
+				// Find or create reactor user
+				const reactorDefinition = await User.findAll({
+					where: {
+						snowflake: user.id
+					}
+				});
+
+				let reactorUUID
+				if (reactorDefinition.length > 0) {
+					reactorUUID = reactorDefinition[0].dataValues.uuid
+				} else {
+					// Create a new definition
+					reactorUUID = uuidv4()
+					await User.create({
+						uuid: reactorUUID,
+						snowflake: user.id
+					});
+				}
+				
+				// Find or create reactee user
+				const reacteeDefinition = await User.findAll({
+					where: {
+						snowflake: message.author.id
+					}
+				});
+
+				let reacteeUUID
+				if (reacteeDefinition.length > 0) {
+					reacteeUUID = reacteeDefinition[0].dataValues.uuid
+				} else {
+					// Create a new definition
+					reacteeUUID = uuidv4()
+					await User.create({
+						uuid: reacteeUUID,
+						snowflake: message.author.id
+					});
+				}
+
+				// Link
+				await User_Reacts.create({
+					uuid: uuidv4(),
+					messageSnowflake: message.id,
+					userUuid: reacteeUUID,
+					reactorUuid: reactorUUID,
+					emoteUuid: emojiUUID
+				});
+			})
+		})
 	}
 }
