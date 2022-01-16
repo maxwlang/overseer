@@ -6,6 +6,7 @@
   "author": "GotKrypto76",
   "license": "MIT",
   "scripts": {
+    "dev": "nodemon -w ./src/** ./build/src/index.js",
     "start": "node ./src/index.js",
     "migrate": "sequelize-cli db:migrate --env production --config ./src/config/sequelize.json --seeders-path ./src/sequelize/seeders --models-path ./src/sequelize/models --migrations-path ./src/sequelize/migrations"
   },
@@ -14,11 +15,16 @@
     "@discordjs/rest": "^0.2.0-canary.0",
     "bluebird": "^3.7.2",
     "discord-api-types": "^0.26.1",
-    "discord.js": "^13.6.0",
+    "discord.js": "^13.4.0",
     "sequelize": "^6.13.0",
     "sequelize-cli": "^6.3.0",
     "sqlite3": "^5.0.2",
+    "underscore": "^1.13.2",
     "uuid": "^8.3.2",
     "winston": "^3.4.0"
+  },
+  "devDependencies": {
+    "eslint-config-airbnb": "^19.0.4",
+    "nodemon": "^2.0.15"
   }
 }
