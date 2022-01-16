@@ -24,6 +24,8 @@ module.exports = {
 			if (!(await needsAdditionalMessages(bot, channel))) return []
 			return await getAdditionalMessages(bot, channel, bot.config.leaderboard.history)
 		}).filter(messageArr => messageArr.length > 0))		
+		
+		if (messages.length === 0) return bot.log.info('[Sync] Messages up to date!')
 		bot.log.info(`[Sync] ${messages.length} messages downloaded`)
 
 		bot.log.info(`[Sync] Tallying reacts for ${messages.length} messags, this will take some time`)
