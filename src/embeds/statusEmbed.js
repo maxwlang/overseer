@@ -5,8 +5,24 @@ module.exports = async (bot, emojis, selected = 0) => {
     const botName = bot.user.username
     const avatarUrl = bot.user.displayAvatarURL({ dynamic: true })
     const serverName = bot.guilds.cache.get(bot.config.server.id)
+    const {User_Reacts, User} = bot.db.sequelize.models
 
     const emoji = emojis[selected]
+
+    const users = await User.findAll()
+    const leaderboard = (await bPromise.map(users, async user => {
+        let [userTotals] = await User_Reacts.count({
+            group: 'userUuid',
+            where: {
+                userUuid: user.dataValues.uuid
+                // also include emote details here
+            }
+        })
+        return {
+            total: userTotals !== undefined ? userTotals.count : 0,
+            snowflake: user.dataValues.snowflake
+        }
+    })).sort((a, b) => b.total - a.total)
     
     // inside a command, event listener, etc.
     const embed = new MessageEmbed()
@@ -35,10 +51,11 @@ module.exports = async (bot, emojis, selected = 0) => {
         })
 
         for (let i = 0; i < bot.config.leaderboard.maxUsers; i++) {
+            const user = await bot.users.fetch(leaderboard[i].snowflake)
             embed.addFields(
                 {
-                    name: `${i + 1}. Max`,
-                    value: `${emoji} - 290`,
+                    name: `${i + 1}. ${user.username}`,
+                    value: `${emoji} - ${leaderboard[i].total}`,
                     inline: true
                 },
             )
