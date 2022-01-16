@@ -4,7 +4,8 @@ const {Client, Intents} = require('discord.js')
 class Bot extends Client {
     constructor(config, db, logger, options) {
         super({
-            intents: [Intents.FLAGS.GUILDS],
+            intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MESSAGE_REACTIONS],
+	        partials: ['MESSAGE', 'CHANNEL', 'REACTION'],
             ...options
         })
         this.statusEmbed = null
@@ -12,13 +13,13 @@ class Bot extends Client {
         this.log = logger
         this.db = db
     }
-
 }
 
 module.exports = async (config, db, logger, options) => {
     const bot = new Bot(config, db, logger, options)
     bot.login(config.token)
     
+    // Register event handlers
     const eventFiles = fs.readdirSync('./src/events').filter(file => file.endsWith('.js'))
     for (const file of eventFiles) {
         const event = require(`./events/${file}`)
