@@ -8,7 +8,7 @@
         logger.info('Loading database..')
         await db.sequelize.authenticate()
 
-        logger.info(`Loaded ${await db.sequelize.models.React.count()} reacts for ${await db.sequelize.models.User.count()} users.`)
+        logger.info(`Loaded ${await db.sequelize.models.User_Reacts.count()} reacts for ${await db.sequelize.models.User.count()} users.`)
         
         logger.info('Loading bot')
         await require('./bot')(config, db, logger)
