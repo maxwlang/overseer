@@ -18,5 +18,8 @@
     "global-require": "off",
     "no-plusplus": "off",
     "comma-dangle": "off"
-  }
+  },
+  "ignorePatterns": [
+    "src/sequelize/**"
+  ]
 }
