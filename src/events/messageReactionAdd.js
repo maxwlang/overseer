@@ -18,6 +18,33 @@ module.exports = {
             }
         }
 
+        // If monitoring specific channels and this channel isn't one of them, return out
+        if (bot.config.server.monitorChannelIDs !== null
+            && bot.config.server.monitorChannelIDs.length > 0
+            && bot.config.server.monitorChannelIDs.indexOf(reaction.message.channel.id) === -1
+        ) return
+
+        // Return out if self-reacts do not count towards the leaderboard
+        if (!bot.config.leaderboard.selfReactsCount && user.id === reaction.message.author.id) return
+
+        // Return out if bot reactor reacts are disabled and bot react
+        if (bot.config.leaderboard.ignore.fromBots && user.bot) return
+
+        // Return out if bot reactee reacts are disabled and bot reactee
+        if (bot.config.leaderboard.ignore.toBots && reaction.message.author.bot) return
+
+        // Return out if reactor in ignore from users
+        if (bot.config.leaderboard.ignore.fromUsers
+            && bot.config.leaderboard.ignore.fromUsers.length > 0
+            && bot.config.leaderboard.ignore.fromUsers.indexOf(user.id) !== -1
+        ) return
+
+        // Return out if reactee in ignore to users
+        if (bot.config.leaderboard.ignore.toUsers
+            && bot.config.leaderboard.ignore.toUsers.length > 0
+            && bot.config.leaderboard.ignore.toUsers.indexOf(reaction.message.author.id) !== -1
+        ) return
+
         // Find or create emote definition in db
         const emojiUUID = await locateOrCreateEmoteDefinition(reaction, bot)
 
@@ -26,8 +53,6 @@ module.exports = {
 
         // Find or create reactee user in db
         const reacteeUUID = await locateOrCreateReacteeDefinition(reaction.message, bot)
-
-        if (!bot.config.leaderboard.selfReactsCount && reactorUUID === reacteeUUID) return
 
         try {
             const { User_Reacts } = bot.db.sequelize.models

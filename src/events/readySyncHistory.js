@@ -145,6 +145,24 @@ async function tallyReactsForMessage(bot, message) {
                 // Return out if self-reacts do not count towards the leaderboard
                 if (!bot.config.leaderboard.selfReactsCount && user.id === message.author.id) return
 
+                // Return out if bot reactor reacts are disabled and bot react
+                if (bot.config.leaderboard.ignore.fromBots && user.bot) return
+
+                // Return out if bot reactee reacts are disabled and bot reactee
+                if (bot.config.leaderboard.ignore.toBots && message.author.bot) return
+
+                // Return out if reactor in ignore from users
+                if (bot.config.leaderboard.ignore.fromUsers
+                    && bot.config.leaderboard.ignore.fromUsers.length > 0
+                    && bot.config.leaderboard.ignore.fromUsers.indexOf(user.id) !== -1
+                ) return
+
+                // Return out if reactee in ignore to users
+                if (bot.config.leaderboard.ignore.toUsers
+                    && bot.config.leaderboard.ignore.toUsers.length > 0
+                    && bot.config.leaderboard.ignore.toUsers.indexOf(message.author.id) !== -1
+                ) return
+
                 // Find or create reactor user
                 const reactorUUID = await locateOrCreateReactorDefinition(user, bot)
 
