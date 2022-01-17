@@ -1,10 +1,10 @@
-const { createLogger, format, transports, } = require('winston')
+const { createLogger, format, transports } = require('winston')
 
 const {
     combine,
     colorize,
     printf,
-    timestamp
+    timestamp,
 } = format
 
 const logger = createLogger({
@@ -13,18 +13,18 @@ const logger = createLogger({
     transports: (() => {
         const transportStorage = []
 
-       transportStorage.push(new transports.File({ filename: './data/logs.log', }))
+        transportStorage.push(new transports.File({ filename: './data/logs.log' }))
 
         // Always log to console
         transportStorage.push(new transports.Console({
             format: combine(
                 colorize(),
-                timestamp({ format: 'MM/DD/YYYY hh:mm:ss A', }),
+                timestamp({ format: 'MM/DD/YYYY hh:mm:ss A' }),
                 printf(({
                     timestamp,
                     level,
                     message,
-                }) => `[${timestamp}][Accomplice][${level}]: ${message}`)
+                }) => `[${timestamp}][Accomplice][${level}]: ${message}`),
             ),
         }))
 

@@ -1,4 +1,3 @@
-
 (async () => {
     const config = require('./config/bot.json')
     const logger = require('./modules/logger')
@@ -8,7 +7,7 @@
         logger.info('Loading database..')
         await db.sequelize.authenticate()
 
-        const {User_Reacts, User, Emote} = db.sequelize.models
+        const { User_Reacts, User, Emote } = db.sequelize.models
         logger.info(`Loaded ${await Emote.count()} emotes, ${await User_Reacts.count()} reacts, and ${await User.count()} users.`)
 
         logger.info('Loading bot')

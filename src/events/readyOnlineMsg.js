@@ -1,7 +1,7 @@
 module.exports = {
-	name: 'ready',
-	once: true,
-	execute(bot) {
-		bot.log.info('Accomplice online')
-	}
+    name: 'ready',
+    once: true,
+    execute(bot) {
+        bot.log.info('Accomplice online')
+    },
 }
