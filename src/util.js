@@ -1,7 +1,7 @@
 const uuidv4 = require('uuid').v4
 
 async function locateOrCreateEmoteDefinition(reaction, bot) {
-    const { Emote } = bot.db.sequelize
+    const { Emote } = bot.db.sequelize.models
     const isCustom = reaction.emoji.id !== null
     const emoteDefinition = await Emote.findAll({
         where: (() => {
@@ -32,7 +32,7 @@ async function locateOrCreateEmoteDefinition(reaction, bot) {
 }
 
 async function locateOrCreateReactorDefinition(user, bot) {
-    const { User } = bot.db.sequelize
+    const { User } = bot.db.sequelize.models
     const reactorDefinition = await User.findAll({
         where: {
             snowflake: user.id,
@@ -54,7 +54,7 @@ async function locateOrCreateReactorDefinition(user, bot) {
 }
 
 async function locateOrCreateReacteeDefinition(message, bot) {
-    const { User } = bot.db.sequelize
+    const { User } = bot.db.sequelize.models
     const reacteeDefinition = await User.findAll({
         where: {
             snowflake: message.author.id,
@@ -72,6 +72,8 @@ async function locateOrCreateReacteeDefinition(message, bot) {
             snowflake: message.author.id,
         })
     }
+
+    return reacteeUUID
 }
 
 module.exports = {
