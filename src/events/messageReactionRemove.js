@@ -1,11 +1,12 @@
-const uuidv4 = require('uuid').v4
 const { locateOrCreateEmoteDefinition, locateOrCreateReactorDefinition, locateOrCreateReacteeDefinition } = require('../util')
 const generateStatusEmbed = require('../embeds/statusEmbed')
 
 module.exports = {
-    name: 'messageReactionAdd',
+    name: 'messageReactionRemove',
     once: false,
     async execute(reaction, user, bot) {
+        if (bot.syncing) return
+
         // When a reaction is received, check if the structure is partial (old messages not cached)
         if (reaction.partial) {
             // If the message this reaction belongs to was removed, the fetching might result in an API error which should be handled
@@ -31,7 +32,7 @@ module.exports = {
 
         try {
             const { User_Reacts } = bot.db.sequelize.models
-            const existingReactResult = await User_Reacts.findAll({
+            const [existingReactResult] = await User_Reacts.findAll({
                 where: {
                     messageSnowflake: reaction.message.id,
                     userUuid: reacteeUUID,
@@ -40,15 +41,13 @@ module.exports = {
                 }
             })
 
-            // We already have this
-            if (existingReactResult.length !== 0) return
+            // We don't have this
+            if (existingReactResult.length === 0) return
 
-            await User_Reacts.create({
-                uuid: uuidv4(),
-                messageSnowflake: reaction.message.id,
-                userUuid: reacteeUUID,
-                reactorUuid: reactorUUID,
-                emoteUuid: emojiUUID
+            await User_Reacts.destroy({
+                where: {
+                    uuid: existingReactResult.dataValues.uuid
+                }
             })
 
             const statusEmbed = await generateStatusEmbed(bot, bot.config.emoji.watching, bot.statusEmbedIndex)

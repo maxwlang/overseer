@@ -52,14 +52,29 @@ module.exports = async (bot, emojis, selected = 0) => {
         })
 
     for (let i = 0; i < bot.config.leaderboard.maxUsers; i++) {
-        const user = await bot.users.fetch(leaderboard[i].snowflake)
-        embed.addFields(
-            {
-                name: `${i + 1}. ${user.username}`,
-                value: `${emoji} - ${leaderboard[i].total}`,
-                inline: true,
-            },
-        )
+        try {
+            await bot.users.fetch(leaderboard[i].snowflake)
+                .then(user => embed.addFields(
+                    {
+                        name: `${i + 1}. ${user.username}`,
+                        value: `${emoji} - ${leaderboard[i].total}`,
+                        inline: true,
+                    },
+                ))
+                .catch(e => {
+                    if (e.code === 10013 && leaderboard[i].snowflake !== undefined) return
+                    throw e
+                })
+        } catch (e) {
+            embed.addFields(
+                {
+                    name: 'No React Data',
+                    value: "We're probably indexing server reacts. Check back in a bit.",
+                    inline: true,
+                },
+            )
+            break
+        }
     }
 
     embed.addFields(
