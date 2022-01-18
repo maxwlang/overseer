@@ -46,11 +46,10 @@ module.exports = async (bot, emojis, selected = 0) => {
     const embed = new MessageEmbed()
         .setColor('#ffab34')
         .setTitle(`${serverName}'s ${emoji} Leaderboard`)
-        // .setURL('https://discord.js.org/')
         .setAuthor({
             name: botName,
             iconURL: avatarUrl,
-            // url: 'https://discord.js.org'
+            url: 'https://github.com/maxwlang/accomplice'
         })
         .setDescription(`Automatically updating Leaderboard of top  ${emoji}  earners on ${serverName}.`)
         .setThumbnail(
@@ -61,7 +60,6 @@ module.exports = async (bot, emojis, selected = 0) => {
         .addFields(
             { name: '\u200B', value: '\u200B' },
         )
-        // .setImage('https://i.imgur.com/AfFp7pu.png')
         .setTimestamp()
         .setFooter({
             text: 'Max says hi',
