@@ -19,9 +19,9 @@ module.exports = {
         }
 
         // If monitoring specific channels and this channel isn't one of them, return out
-        if (bot.config.server.monitorChannelIDs !== null
-            && bot.config.server.monitorChannelIDs.length > 0
-            && bot.config.server.monitorChannelIDs.indexOf(reaction.message.channel.id) === -1
+        if (bot.config.server.channel.monitorChannelIDs !== null
+            && bot.config.server.channel.monitorChannelIDs.length > 0
+            && bot.config.server.channel.monitorChannelIDs.indexOf(reaction.message.channel.id) === -1
         ) return
 
         // Return out if self-reacts do not count towards the leaderboard
