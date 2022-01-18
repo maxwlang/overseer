@@ -65,6 +65,12 @@ async function needsAdditionalMessages(bot, channel) {
     // Doesn't need to update, we got results for latest message ID
     if (readResult.length > 0) return false
 
+    await Message_Sync.destroy({
+        where: {
+            channelSnowflake: channel.id,
+        }
+    })
+
     await Message_Sync.create({
         channelSnowflake: channel.id,
         lastMessageSnowflake: latestMessageId,
