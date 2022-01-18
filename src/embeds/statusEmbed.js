@@ -66,6 +66,7 @@ module.exports = async (bot, emojis, selected = 0) => {
             iconURL: 'https://avatars.githubusercontent.com/u/59022944?v=4',
         })
 
+    let failed = false
     for (let i = 0; i < bot.config.leaderboard.maxUsers; i++) {
         try {
             await bot.users.fetch(leaderboard[i].snowflake)
@@ -91,6 +92,7 @@ module.exports = async (bot, emojis, selected = 0) => {
                     throw e
                 })
         } catch (e) {
+            failed = true
             embed.addFields(
                 {
                     name: 'No React Data',
@@ -105,6 +107,8 @@ module.exports = async (bot, emojis, selected = 0) => {
     embed.addFields(
         { name: '\u200B', value: '\u200B' },
     )
+
+    if (failed) return { embeds: [embed] }
 
     const selectOptions = await bPromise.map(emojis, async (emoji, index) => {
         const server = bot.guilds.cache.get(bot.config.server.id)
