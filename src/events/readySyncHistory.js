@@ -9,6 +9,9 @@ module.exports = {
     once: true,
     async execute(bot) {
         bot.log.info('[Sync] Syncing react history..')
+        if (bot.syncing) return bot.log.info('[Sync] Cowardly refusing a sync because we\'re already syncing.')
+        bot.syncing = true
+
         const server = bot.guilds.cache.get(bot.config.server.id)
         let channels = server.channels.cache
 
@@ -38,6 +41,7 @@ module.exports = {
         const statusEmbed = await generateStatusEmbed(bot, bot.config.emoji.watching)
         if (bot.statusEmbed) bot.statusEmbed.edit(statusEmbed)
 
+        bot.syncing = false
         bot.log.info('[Sync] Sync complete!')
     },
 }
