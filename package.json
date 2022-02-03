@@ -6,7 +6,7 @@
   "author": "GotKrypto76",
   "license": "MIT",
   "scripts": {
-    "dev": "nodemon -w ./src/** ./build/src/index.js",
+    "dev": "nodemon -w ./src/** ./src/index.js",
     "start": "node ./src/index.js",
     "migrate": "sequelize-cli db:migrate --env production --config ./src/config/sequelize.json --seeders-path ./src/sequelize/seeders --models-path ./src/sequelize/models --migrations-path ./src/sequelize/migrations"
   },

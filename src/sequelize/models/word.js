@@ -16,8 +16,8 @@ module.exports = (sequelize, DataTypes) => {
   Word.init({
     uuid: DataTypes.UUIDV4,
     word: DataTypes.STRING,
-    solved: DataTypes.BOOLEAN,
-    solver: DataTypes.UUIDV4
+    active: DataTypes.BOOLEAN,
+    burnt: DataTypes.BOOLEAN
   }, {
     sequelize,
     modelName: 'Word',

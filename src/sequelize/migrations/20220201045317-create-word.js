@@ -18,13 +18,13 @@ module.exports = {
         unique: true,
         type: Sequelize.STRING
       },
-      solved: {
+      active: {
         allowNull: false,
         type: Sequelize.BOOLEAN
       },
-      solver: {
+      burnt: {
         allowNull: false,
-        type: Sequelize.UUIDV4
+        type: Sequelize.BOOLEAN
       },
       createdAt: {
         allowNull: false,
