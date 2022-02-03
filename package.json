@@ -16,6 +16,7 @@
     "bluebird": "^3.7.2",
     "discord-api-types": "^0.26.1",
     "discord.js": "^13.4.0",
+    "luxon": "^2.3.0",
     "ordinal": "^1.0.3",
     "sequelize": "^6.13.0",
     "sequelize-cli": "^6.3.0",

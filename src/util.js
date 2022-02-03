@@ -1,4 +1,76 @@
 // const uuidv4 = require('uuid').v4
+const { sample } = require('underscore')
+
+async function findActiveWord(bot) {
+    const { Word, Session } = bot.db.sequelize.models
+
+    const session = await Session.findAll({
+        where: {
+            uuid: bot.sessionUuid
+        }
+    })
+
+    if (session.length === 0 || session[0].dataValues.wordUuid === null) {
+        return []
+    }
+
+    const [activeWord] = await Word.findAll({
+        limit: 1,
+        where: {
+            uuid: session[0].dataValues.wordUuid,
+            active: true,
+            burnt: false,
+        },
+    })
+
+    return activeWord || []
+}
+
+async function setActiveWord(wordUuid, bot) {
+    const { Word, Session } = bot.db.sequelize.models
+
+    // Set all active words to inactive
+    await Word.update({ active: false }, {
+        where: {
+            active: true
+        }
+    })
+
+    // Set new word to active
+    const result = await Word.update({ active: true }, {
+        where: {
+            uuid: wordUuid
+        }
+    })
+
+    // Set word active in session
+    await Session.update({ wordUuid }, {
+        where: {
+            uuid: bot.sessionUuid
+        }
+    })
+
+    return result.length > 0
+}
+
+async function getNewWord(bot) {
+    const { Word } = bot.db.sequelize.models
+
+    // Select one random unburnt word!
+    const result = await Word.findAll({
+        where: {
+            burnt: false
+        }
+    })
+
+    if (result.length === 0) {
+        bot.log.error('Out of words')
+        throw new Error('Out of words')
+    }
+
+    const [word] = sample(result, 1)
+    return word
+}
 
 // async function locateOrCreateEmoteDefinition(reaction, bot) {
 //     const { Emote } = bot.db.sequelize.models
@@ -77,7 +149,7 @@
 // }
 
 module.exports = {
-    // locateOrCreateEmoteDefinition,
-    // locateOrCreateReactorDefinition,
-    // locateOrCreateReacteeDefinition
+    findActiveWord,
+    setActiveWord,
+    getNewWord
 }
