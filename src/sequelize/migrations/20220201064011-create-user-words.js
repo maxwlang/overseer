@@ -1,7 +1,7 @@
 'use strict';
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('Emotes', {
+    await queryInterface.createTable('User_Words', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -9,18 +9,13 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       uuid: {
-        allowNull: false,
-        unique: true,
         type: Sequelize.UUIDV4
       },
-      isCustom: {
-        type: Sequelize.BOOLEAN
+      useruuid: {
+        type: Sequelize.UUIDV4
       },
-      customId: {
-        type: Sequelize.STRING
-      },
-      unicodeValue: {
-        type: Sequelize.STRING
+      worduuid: {
+        type: Sequelize.UUIDV4
       },
       createdAt: {
         allowNull: false,
@@ -33,6 +28,6 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('Emotes');
+    await queryInterface.dropTable('User_Words');
   }
 };

@@ -9,10 +9,8 @@ class Bot extends Client {
             partials: ['MESSAGE', 'CHANNEL', 'REACTION'],
             ...options,
         })
-        this.periodicSync = null
         this.statusEmbed = null
         this.statusEmbedIndex = 0
-        this.syncing = false
         this.config = config
         this.log = logger
         this.db = db

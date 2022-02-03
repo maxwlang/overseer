@@ -24,7 +24,7 @@ const logger = createLogger({
                     timestamp,
                     level,
                     message,
-                }) => `[${timestamp}][Accomplice][${level}]: ${message}`),
+                }) => `[${timestamp}][Overseer][${level}]: ${message}`),
             ),
         }))
 

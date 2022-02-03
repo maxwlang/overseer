@@ -1,6 +1,6 @@
 {
   "production": {
-    "database": "accomplice",
+    "database": "overseer",
     "dialect": "sqlite",
     "storage": "./data/database.db",
     "logging": false

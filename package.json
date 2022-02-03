@@ -1,7 +1,7 @@
 {
-  "name": "accomplice",
+  "name": "wordle_overseer",
   "version": "1.0.0",
-  "description": "adds an updating embed message for starboard channels",
+  "description": "does shit for free because mee6 suck",
   "main": "index.js",
   "author": "GotKrypto76",
   "license": "MIT",
@@ -16,6 +16,7 @@
     "bluebird": "^3.7.2",
     "discord-api-types": "^0.26.1",
     "discord.js": "^13.4.0",
+    "ordinal": "^1.0.3",
     "sequelize": "^6.13.0",
     "sequelize-cli": "^6.3.0",
     "sqlite3": "^5.0.2",

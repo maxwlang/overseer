@@ -3,7 +3,7 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class Message_Sync extends Model {
+  class User_Words extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -12,13 +12,14 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
     }
-  }
-  Message_Sync.init({
-    channelSnowflake: DataTypes.STRING,
-    lastMessageSnowflake: DataTypes.STRING
+  };
+  User_Words.init({
+    uuid: DataTypes.UUIDV4,
+    useruuid: DataTypes.UUIDV4,
+    worduuid: DataTypes.UUIDV4
   }, {
     sequelize,
-    modelName: 'Message_Sync',
+    modelName: 'User_Words',
   });
-  return Message_Sync;
+  return User_Words;
 };

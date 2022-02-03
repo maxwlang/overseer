@@ -1,7 +1,7 @@
 'use strict';
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('User_Reacts', {
+    await queryInterface.createTable('Words', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -13,19 +13,16 @@ module.exports = {
         unique: true,
         type: Sequelize.UUIDV4
       },
-      messageSnowflake: {
+      word: {
         allowNull: false,
+        unique: true,
         type: Sequelize.STRING
       },
-      userUuid: {
+      solved: {
         allowNull: false,
-        type: Sequelize.UUIDV4
+        type: Sequelize.BOOLEAN
       },
-      reactorUuid: {
-        allowNull: false,
-        type: Sequelize.UUIDV4
-      },
-      emoteUuid: {
+      solver: {
         allowNull: false,
         type: Sequelize.UUIDV4
       },
@@ -40,6 +37,6 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('User_Reacts');
+    await queryInterface.dropTable('Words');
   }
 };
