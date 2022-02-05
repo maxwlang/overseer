@@ -8,7 +8,8 @@
   "scripts": {
     "dev": "nodemon -w ./src/** ./src/index.js",
     "start": "node ./src/index.js",
-    "migrate": "sequelize-cli db:migrate --env production --config ./src/config/sequelize.json --seeders-path ./src/sequelize/seeders --models-path ./src/sequelize/models --migrations-path ./src/sequelize/migrations"
+    "migrate": "sequelize-cli db:migrate --env production --config ./src/config/sequelize.json --seeders-path ./src/sequelize/seeders --models-path ./src/sequelize/models --migrations-path ./src/sequelize/migrations",
+    "populate": "node ./src/fillDb.js"
   },
   "dependencies": {
     "@discordjs/builders": "^0.11.0",

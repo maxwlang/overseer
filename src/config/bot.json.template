@@ -3,34 +3,24 @@
     "token": "",
     "server": {
         "$comment_id": "A string encapsulated server id for the bot to monitor",
-        "id": "",
+        "id": "926744141440884776",
         "channel": {
-            "$comment_monitorChannelIDs": "An array of string encapsulated channel ids to monitor for reacts. Set to null to monitor all channels in server.",
-            "monitorChannelIDs": null,
-            "$comment_statusChannelID": "A string encapsulated channel id dedicated to this bot, where we post our leaderboard.",
-            "statsChannelID": ""
+            "$comment_leaderboard": "The channel snowflake where we should maintain our leaderboard embed",
+            "leaderboard": "937905070048153651",
+            "$comment_challenge": "The channel snowflake where we should maintain our challenge embed and threads",
+            "challenge": "937905070048153651"
         }
     },
-    "emoji": {
-        "$comment_watching": "An array of unicode emojis or server-specific custom emoji names without colon characters",
-        "watching": ["⭐", "myCustomEmote"]
+    "maintenance": {
+        "$comment_refreshPeriod": "Interval to check expires in seconds",
+        "refreshPeriod": 45
+    },
+    "logs": {
+        "$comment_level": "Level of logs to display: debug, error, warn, info",
+        "level": "info"
     },
     "leaderboard": {
         "$comment_maxUsers": "How many users we should show on the leaderboard",
-        "maxUsers": 10,
-        "$comment_history": "How far back per channel we should search messages",
-        "history": 10000,
-        "$comment_selfReactsCount": "Should we count when a user reacts on their own message?",
-        "selfReactsCount": false,
-        "ignore": {
-            "$comment_toBots": "Should we ignore reacts to bots?",
-            "toBots": true,
-            "$comment_fromBots": "Should we ignore reacts fron bots?",
-            "fromBots": true,
-            "$comment_toUsers": "An array of string encapsulated user snowflakes to ignore reacts to",
-            "toUsers": [],
-            "$comment_fromUsers": "An array of string encapsulated user snowflakes to ignore reacts from",
-            "fromUsers": []
-        }
+        "maxUsers": 12
     } 
 }
