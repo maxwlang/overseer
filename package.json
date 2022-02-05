@@ -1,7 +1,7 @@
 {
   "name": "wordle_overseer",
   "version": "1.0.0",
-  "description": "does shit for free because mee6 suck",
+  "description": "overseer",
   "main": "index.js",
   "author": "GotKrypto76",
   "license": "MIT",

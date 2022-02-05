@@ -1,5 +1,5 @@
-# Accomplice
-Accompanies starboard bots. Sole purpose is to place an updating embed message in a channel that counts the top reacts in another channel
+# Overseer
+Maintains a daily challenge for wordle server
 
 ## Setup
 1. Install nodejs 16.
@@ -7,8 +7,5 @@ Accompanies starboard bots. Sole purpose is to place an updating embed message i
 3. Configure `config.json`, add token to file.
 4. Install packages: `yarn` or `npm i`
 5. Create database: `yarn migrate` or `npm migrate`
-6. Run: `yarn start` or `npm start` 
-
-Give the bot permissions integer 277025459200
-
-https://discord.com/oauth2/authorize?client_id=931406732800950302&scope=bot&permissions=8
+6. Populate database: `yarn populate` or `npm populate`
+7. Run: `yarn start` or `npm start` 
