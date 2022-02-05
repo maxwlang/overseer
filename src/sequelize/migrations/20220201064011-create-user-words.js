@@ -9,12 +9,16 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       uuid: {
+        allowNull: false,
+        unique: true,
         type: Sequelize.UUIDV4
       },
       useruuid: {
+        allowNull: false,
         type: Sequelize.UUIDV4
       },
       worduuid: {
+        allowNull: false,
         type: Sequelize.UUIDV4
       },
       createdAt: {

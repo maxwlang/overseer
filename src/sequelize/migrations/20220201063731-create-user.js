@@ -9,9 +9,13 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       uuid: {
+        allowNull: false,
+        unique: true,
         type: Sequelize.UUIDV4
       },
       snowflake: {
+        allowNull: false,
+        unique: true,
         type: Sequelize.STRING
       },
       createdAt: {

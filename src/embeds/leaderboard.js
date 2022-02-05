@@ -1,25 +1,54 @@
 const { MessageEmbed } = require('discord.js')
 const ordinal = require('ordinal')
+const bPromise = require('bluebird')
 
 module.exports = async bot => {
-    const leaders = [
-        {
-            name: 'Jeef Beezor',
-            points: 100
-        },
-        {
-            name: 'Theef Beezor',
-            points: 75
-        },
-        {
-            name: 'Leef Beezor',
-            points: 10
-        },
-        {
-            name: 'Steef Beezor',
-            points: 4
-        }
-    ]
+    const { User_Words, User } = bot.db.sequelize.models
+    let leaders = []
+
+    const usersWithWords = await User_Words.findAll({
+        group: 'useruuid'
+    })
+
+    if (usersWithWords.length > 0) {
+        const userTotalPairs = await bPromise.map(usersWithWords, async userRow => {
+            const userObj = userRow.dataValues
+
+            const userWordCount = await User_Words.count({
+                group: 'useruuid',
+                where: {
+                    useruuid: userObj.useruuid
+                }
+            })
+
+            return {
+                ...userObj,
+                total: userWordCount[0].count ?? 0
+            }
+        })
+
+        const topX = userTotalPairs
+            .sort((a, b) => b.total - a.total)
+            .slice(0, bot.config.leaderboard.maxUsers - 1)
+
+        leaders = await bPromise.map(topX, async topUser => {
+            const user = await User.findAll({
+                where: {
+                    uuid: topUser.useruuid
+                }
+            })
+
+            const { snowflake } = user[0].dataValues
+            const discordUser = await bot.users.fetch(snowflake)
+
+            return {
+                ...topUser,
+                snowflake,
+                name: discordUser.username,
+                points: topUser.total
+            }
+        })
+    }
 
     const embed = new MessageEmbed()
         .setColor('#6aaa64')
@@ -30,7 +59,12 @@ module.exports = async bot => {
         .addFields(
             { name: '\u200B', value: '\u200B' },
         )
-        .addFields(
+        .setTimestamp()
+
+    if (leaders.length === 0) {
+        embed.addFields({ name: "There's nobody here yet!", value: "Complete today's challenge to appear here!", inline: true })
+    } else {
+        embed.addFields(
             leaders.map((leader, index) => (
                 {
                     name: `${ordinal(index + 1)}.\n${leader.name}`,
@@ -39,7 +73,7 @@ module.exports = async bot => {
                 }
             ))
         )
-        .setTimestamp()
+    }
 
     return { embeds: [embed] }
 }

@@ -17,6 +17,10 @@ module.exports = {
         allowNull: true,
         type: Sequelize.UUIDV4
       },
+      wordExpireDateTime: {
+        allowNull: true,
+        type: Sequelize.DATE
+      },
       threadUuid: {
         allowNull: true,
         type: Sequelize.UUIDV4

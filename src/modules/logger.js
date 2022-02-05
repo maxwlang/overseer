@@ -1,4 +1,5 @@
 const { createLogger, format, transports } = require('winston')
+const config = require('../config/bot.json')
 
 const {
     combine,
@@ -8,7 +9,7 @@ const {
 } = format
 
 const logger = createLogger({
-    level: 'info',
+    level: config.logs.level ?? 'info',
     format: format.json(),
     transports: (() => {
         const transportStorage = []

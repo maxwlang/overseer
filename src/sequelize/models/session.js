@@ -16,6 +16,7 @@ module.exports = (sequelize, DataTypes) => {
   Session.init({
     uuid: DataTypes.UUIDV4,
     wordUuid: DataTypes.UUIDV4,
+    wordExpireDateTime: DataTypes.DATE,
     threadUuid: DataTypes.UUIDV4,
     leaderboardMessageSnowflake: DataTypes.STRING,
     challengeMessageSnowflake: DataTypes.STRING

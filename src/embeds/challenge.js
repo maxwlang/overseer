@@ -1,7 +1,6 @@
 const { MessageEmbed, MessageActionRow, MessageButton } = require('discord.js')
 
-module.exports = async bot => {
-    const wardle = btoa(bot.activeWord.word) // TODO: replace with non-deprecated
+module.exports = () => {
     const embed = new MessageEmbed()
         .setColor('#6aaa64')
         .setTitle('Server Challenge')
@@ -13,13 +12,9 @@ module.exports = async bot => {
     const row = new MessageActionRow()
         .addComponents(
             new MessageButton()
-                .setStyle('LINK')
-                .setURL(`https://www.wordleunlimited.com/?wardle=${wardle}`)
-                .setLabel('Open Challenge'),
-            new MessageButton()
-                .setCustomId('solveChallenge')
-                .setLabel('Solve Challenge')
-                .setStyle('SUCCESS')
+                .setCustomId('openChallenge')
+                .setLabel('Open Challenge')
+                .setStyle('PRIMARY')
         )
 
     return { embeds: [embed], components: [row] }

@@ -18,10 +18,6 @@ module.exports = {
         unique: true,
         type: Sequelize.STRING
       },
-      active: {
-        allowNull: false,
-        type: Sequelize.BOOLEAN
-      },
       burnt: {
         allowNull: false,
         type: Sequelize.BOOLEAN

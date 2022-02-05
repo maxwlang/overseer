@@ -10,6 +10,7 @@ class Bot extends Client {
             partials: ['MESSAGE', 'CHANNEL', 'REACTION'],
             ...options,
         })
+        this.maintenanceTimer = null
         this.leaderboardEmbed = null
         this.challengeEmbed = null
         this.sessionUuid = null
@@ -17,6 +18,10 @@ class Bot extends Client {
         this.config = config
         this.log = logger
         this.db = db
+        this.maintaining = {
+            leaderboard: false,
+            challenge: false
+        }
     }
 }
 
@@ -32,9 +37,18 @@ module.exports = async (config, db, logger, options) => {
     await bPromise.each(eventFiles, file => {
         // eslint-disable-next-line import/no-dynamic-require
         const event = require(`./events/${file}`)
-        if (event.once) return bot.once(event.name, async (...args) => event.execute(...args, bot))
-        bot.on(event.name, async (...args) => event.execute(...args, bot))
+
+        if (event.once) return bot.once(event.name, async (...args) => runEvent(file, event, args, bot))
+        bot.on(event.name, async (...args) => runEvent(file, event, args, bot))
     })
+}
+
+async function runEvent(name, event, args, bot) {
+    try {
+        await event.execute(...args, bot)
+    } catch (e) {
+        bot.log.error(`Event "${name}" (Trigger: "${event.name}") failed with error: ${e.message}\n${e.stack}`)
+    }
 }
 
 async function initializeSession(bot) {

@@ -1,4 +1,5 @@
 const { DateTime } = require('luxon')
+const uuidv4 = require('uuid').v4
 const { getNewWord, findActiveWord, setActiveWord } = require('../util')
 const generateLeaderboardEmbed = require('../embeds/leaderboard')
 const generateChallengeEmbed = require('../embeds/challenge')
@@ -9,9 +10,14 @@ module.exports = {
     async execute(bot) {
         if (bot.activeWord !== null) return
         await initializeActiveWord(bot)
-        await createEmbed(bot)
-        await createThread(bot)
+        await verifyEmbed(bot)
+        await verifyThread(bot)
     },
+    functions: {
+        initializeActiveWord,
+        verifyEmbed,
+        verifyThread
+    }
 }
 
 async function initializeActiveWord(bot) {
@@ -22,7 +28,7 @@ async function initializeActiveWord(bot) {
 
     if (activeWord !== undefined && activeWord.dataValues !== undefined) {
         // We have an active word, set it back onto the instance and return out.
-        bot.log.info(`Setting current active word "${activeWord.dataValues.word}"`)
+        bot.log.info(`Exists -- Setting current active word "${activeWord.dataValues.word}"`)
         bot.activeWord = activeWord.dataValues
         return
     }
@@ -40,8 +46,8 @@ async function initializeActiveWord(bot) {
     bot.log.info(`Set active word "${word.dataValues.word}"`)
 }
 
-async function createEmbed(bot) {
-    bot.log.info('Creating embeds')
+async function verifyEmbed(bot) {
+    bot.log.info('Verifying embeds')
     const { Session } = bot.db.sequelize.models
     const session = await Session.findAll({
         where: {
@@ -63,8 +69,12 @@ async function createEmbed(bot) {
 
         if (message === undefined) {
             await createLeaderboardEmbed(bot)
+            bot.log.info('Created leaderboard')
         } else {
+            const updatedLeaderboard = await generateLeaderboardEmbed(bot)
             bot.leaderboardEmbed = message
+            await bot.leaderboardEmbed.edit(updatedLeaderboard)
+            bot.log.info('Leaderboard already exists')
         }
     }
 
@@ -77,8 +87,10 @@ async function createEmbed(bot) {
             .catch(() => undefined)
         if (message === undefined) {
             await createChallengeEmbed(bot)
+            bot.log.info('Created challenge')
         } else {
             bot.challengeEmbed = message
+            bot.log.info('Challenge already exists')
         }
     }
 }
@@ -119,7 +131,6 @@ async function createChallengeEmbed(bot) {
     const leaderboardChannel = bot.channels.cache.get(bot.config.server.channel.leaderboard)
     const challengeChannel = bot.channels.cache.get(bot.config.server.channel.challenge)
 
-    // TODO: Also delete thread from in session table if deleting message and re-creating
     try {
         if (leaderboardChannel.id !== challengeChannel.id) {
             await challengeChannel.messages.fetch({ limit: 100 })
@@ -141,7 +152,8 @@ async function createChallengeEmbed(bot) {
 
     const { Session } = bot.db.sequelize.models
     await Session.update({
-        challengeMessageSnowflake: bot.challengeEmbed.id
+        challengeMessageSnowflake: bot.challengeEmbed.id,
+        threadUuid: null
     }, {
         where: {
             uuid: bot.sessionUuid
@@ -149,9 +161,9 @@ async function createChallengeEmbed(bot) {
     })
 }
 
-async function createThread(bot) {
-    bot.log.info('Creating challenge thread')
-    const { Session } = bot.db.sequelize.models
+async function verifyThread(bot) {
+    bot.log.info('Verifying challenge thread')
+    const { Session, Threads } = bot.db.sequelize.models
 
     const challengeChannel = bot.channels.cache.get(bot.config.server.channel.challenge)
 
@@ -165,41 +177,67 @@ async function createThread(bot) {
         throw new Error('Can not create thread, can not locate challenge message')
     }
 
-    const thread = await challengeChannel.threads.fetch(session[0].dataValues.threadUuid)
-
-    if (thread !== undefined) {
-        // TODO: Are there additional edge cases here?
-        if (!thread.archived) {
-            bot.log.info('Thread already exists')
-            return
+    const threadRow = await Threads.findAll({
+        where: {
+            uuid: session[0].dataValues.threadUuid
         }
+    })
+
+    let thread
+    if (threadRow.length !== 0) {
+        // Thread already exists in db, but lets also validate it exists in discord
+        thread = await challengeChannel.threads.fetch(
+            threadRow[0].dataValues.snowflake
+        )
     }
 
-    bot.log.info('Creating thread')
+    const expired = DateTime.fromJSDate(session[0].dataValues.wordExpireDateTime).diffNow().toMillis() < 0
+    if (thread !== undefined || threadRow.length > 0) {
+        if (!thread.archived) {
+            if (!expired) {
+                // TODO: Are there additional edge cases here?
+                bot.log.info('Thread already exists')
+                return
+            }
+
+            // Expire the thread and fall through to generate
+            const name = `${DateTime.now().toFormat('MM-dd-yyyy')}-daily-results`
+            await thread.edit({ name })
+            await thread.setArchived(true)
+            bot.log.info('Archived thread')
+        }
+
+        const threadMessage = await challengeChannel.messages.fetch(thread.id)
+        await threadMessage.delete()
+        bot.log.info('Deleted previous thread creation broadcast')
+    }
+
+    bot.log.info('Creating new thread')
     await generateThread(bot)
 }
 
 async function generateThread(bot) {
     const challengeChannel = bot.channels.cache.get(bot.config.server.channel.challenge)
     const dateString = DateTime.now().toFormat('MM-dd-yyyy')
+    const reason = `Created daily thread for ${dateString}`
 
     const thread = await challengeChannel.threads.create({
         name: '⭐-post-daily-results-here',
-        autoArchiveDuration: 1440, // 24 hrs
-        reason: `Created daily thread for ${dateString}`,
+        autoArchiveDuration: 4320,
+        reason,
     })
 
-    const { Session } = bot.db.sequelize.models
-    await Session.update({ threadUuid: thread.id }, {
+    const { Session, Threads } = bot.db.sequelize.models
+    const threadUuid = uuidv4()
+    await Threads.create({
+        uuid: threadUuid,
+        snowflake: thread.id
+    })
+
+    await Session.update({ threadUuid }, {
         where: {
             uuid: bot.sessionUuid
         }
     })
+    bot.log.info(reason)
 }
-
-// TODO:
-/**
- * - Need to handle word changing (delete challenge embed, recreate)
- * - Need to handle thread closing in association with above, edit name of thread
- * - Need to create & implement wordle clone.
- */
