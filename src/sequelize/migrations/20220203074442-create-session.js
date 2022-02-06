@@ -11,11 +11,11 @@ module.exports = {
       uuid: {
         allowNull: false,
         unique: true,
-        type: Sequelize.UUIDV4
+        type: Sequelize.UUID
       },
       wordUuid: {
         allowNull: true,
-        type: Sequelize.UUIDV4
+        type: Sequelize.UUID
       },
       wordExpireDateTime: {
         allowNull: true,
@@ -23,7 +23,7 @@ module.exports = {
       },
       threadUuid: {
         allowNull: true,
-        type: Sequelize.UUIDV4
+        type: Sequelize.UUID
       },
       leaderboardMessageSnowflake: {
         allowNull: true,

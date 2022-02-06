@@ -11,7 +11,7 @@ module.exports = {
       uuid: {
         allowNull: false,
         unique: true,
-        type: Sequelize.UUIDV4
+        type: Sequelize.UUID
       },
       word: {
         allowNull: false,

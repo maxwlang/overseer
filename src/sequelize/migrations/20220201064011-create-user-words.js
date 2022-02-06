@@ -11,15 +11,15 @@ module.exports = {
       uuid: {
         allowNull: false,
         unique: true,
-        type: Sequelize.UUIDV4
+        type: Sequelize.UUID
       },
       useruuid: {
         allowNull: false,
-        type: Sequelize.UUIDV4
+        type: Sequelize.UUID
       },
       worduuid: {
         allowNull: false,
-        type: Sequelize.UUIDV4
+        type: Sequelize.UUID
       },
       createdAt: {
         allowNull: false,

@@ -9,6 +9,7 @@
     "dev": "nodemon -w ./src/** ./src/index.js",
     "start": "node ./src/index.js",
     "migrate": "sequelize-cli db:migrate --env production --config ./src/config/sequelize.json --seeders-path ./src/sequelize/seeders --models-path ./src/sequelize/models --migrations-path ./src/sequelize/migrations",
+    "migrate_dev": "sequelize-cli db:migrate --env development --config ./src/config/sequelize.json --seeders-path ./src/sequelize/seeders --models-path ./src/sequelize/models --migrations-path ./src/sequelize/migrations",
     "populate": "node ./src/fillDb.js"
   },
   "dependencies": {
@@ -18,6 +19,7 @@
     "discord-api-types": "^0.26.1",
     "discord.js": "^13.4.0",
     "luxon": "^2.3.0",
+    "mariadb": "^2.5.5",
     "ordinal": "^1.0.3",
     "sequelize": "^6.13.0",
     "sequelize-cli": "^6.3.0",
